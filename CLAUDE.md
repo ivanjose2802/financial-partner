@@ -6,11 +6,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Personal finance app: cash flow, expenses, income, budgets, and financial overview. MVP-first, clean architecture, fast iteration.
 
+> Full product definition and business logic: see [PRODUCT.md](./PRODUCT.md)
+
 ## Stack
 
 - **Frontend:** Next.js (App Router), TypeScript, TailwindCSS, shadcn/ui, TanStack Query
 - **Backend:** NestJS, TypeORM, PostgreSQL (Supabase), JWT auth, Swagger, class-validator
-- **Infra:** Docker (local dev), Vercel (web), Railway/Render (api), Stripe (payments)
+- **Infra:** Docker (local dev), Vercel (web), Google Cloud Run (api), Stripe (payments)
 
 ## Monorepo Structure
 
@@ -65,17 +67,27 @@ Module layout: `module → controller → service → DTOs → entity`
 - shadcn/ui components exclusively — no custom UI primitives
 - API calls go through a typed client, never raw fetch in components
 
+## Transaction Domain
+
+Key technical decisions — see [PRODUCT.md](./PRODUCT.md) for full business logic.
+
+- `amount` is always a positive decimal; `type` (income/expense) determines the sign in calculations
+- `recurrence`: `one_time` | `recurring` — recurring transactions auto-propagate monthly
+- `status`: `completed` | `scheduled` — scheduled transactions are used for projected balance
+- `category` is an enum (not a DB table) — predefined list, expenses only in MVP
+- Monthly scope calculations (balance, projected balance) live exclusively in `DashboardService`
+- Never calculate balances in the frontend — always consume API aggregates
+
 ## MVP Delivery Order
 
-1. Monorepo structure + Docker setup
-2. DB connection (TypeORM + Supabase)
-3. Auth (JWT)
-4. User entity
-5. Transaction entities + CRUD
+1. ✅ Monorepo structure + Docker setup
+2. ✅ DB connection (TypeORM + Supabase)
+3. ✅ Auth (JWT)
+4. ✅ User entity
+5. Transaction CRUD (current)
 6. Dashboard APIs
 7. Frontend dashboard
 8. Stripe subscriptions
-9. Budget system
 
 ## Working with Claude
 
