@@ -14,7 +14,8 @@ RUN npm ci
 COPY packages/shared/ ./packages/shared/
 COPY apps/api/ ./apps/api/
 
-# nest build compiles apps/api and resolves @financial-partner/shared via workspace symlink
+# Build shared package first so @financial-partner/shared resolves at compile time
+RUN npm run build --workspace=packages/shared
 RUN npm run build --workspace=apps/api
 
 # Stage 2: production image
@@ -28,6 +29,7 @@ COPY apps/api/package.json ./apps/api/
 
 RUN npm ci --omit=dev
 
+COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
 COPY entrypoint.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh
