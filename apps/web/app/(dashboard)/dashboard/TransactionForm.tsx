@@ -39,17 +39,30 @@ function defaultForm(t?: Transaction): FormState {
     type: t?.type ?? 'expense',
     recurrence: t?.recurrence ?? 'one_time',
     status: t?.status ?? 'completed',
-    amount: t?.amount != null ? String(t.amount) : '',
+    amount: t?.amount != null ? String(parseFloat(String(t.amount))) : '',
     description: t?.description ?? '',
     category: t?.category ?? undefined,
     date: t?.date ?? new Date().toISOString().slice(0, 10),
   };
 }
 
+const DESCRIPTION_PLACEHOLDER: Record<string, string> = {
+  income: 'e.g. Monthly salary, freelance payment, bonus...',
+  expense: 'e.g. Monthly rent, groceries, Netflix...',
+};
+
+function formatCurrency(raw: string): string {
+  if (!raw) return '';
+  const num = parseFloat(raw);
+  if (isNaN(num)) return raw;
+  return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
 export default function TransactionForm({ transaction, onClose }: Props) {
   const qc = useQueryClient();
   const [form, setForm] = useState<FormState>(() => defaultForm(transaction));
   const [error, setError] = useState('');
+  const [amountFocused, setAmountFocused] = useState(false);
 
   const set = (field: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -138,16 +151,26 @@ export default function TransactionForm({ transaction, onClose }: Props) {
           {/* Amount */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
-            <input
-              type="number"
-              min="0.01"
-              step="0.01"
-              placeholder="0.00"
-              value={form.amount}
-              onChange={set('amount')}
-              required
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none"
-            />
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm select-none">$</span>
+              <input
+                type="text"
+                inputMode="decimal"
+                placeholder="0.00"
+                value={amountFocused ? form.amount : formatCurrency(form.amount)}
+                onFocus={() => setAmountFocused(true)}
+                onBlur={() => setAmountFocused(false)}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^0-9.]/g, '');
+                  const parts = val.split('.');
+                  if (parts.length === 2 && parts[1].length > 2) return;
+                  const cleaned = parts.length > 2 ? parts[0] + '.' + parts.slice(1).join('') : val;
+                  setForm((prev) => ({ ...prev, amount: cleaned }));
+                }}
+                required
+                className="w-full rounded-lg border border-gray-300 pl-7 pr-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none"
+              />
+            </div>
           </div>
 
           {/* Description */}
@@ -155,7 +178,7 @@ export default function TransactionForm({ transaction, onClose }: Props) {
             <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
             <input
               type="text"
-              placeholder="e.g. Monthly rent"
+              placeholder={DESCRIPTION_PLACEHOLDER[form.type]}
               value={form.description}
               onChange={set('description')}
               required

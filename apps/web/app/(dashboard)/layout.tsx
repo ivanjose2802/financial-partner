@@ -6,13 +6,14 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, logout, user } = useAuth();
+  const { isAuthenticated, isLoading, logout, user } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuthenticated) router.push('/login');
-  }, [isAuthenticated, router]);
+    if (!isLoading && !isAuthenticated) router.push('/login');
+  }, [isLoading, isAuthenticated, router]);
 
+  if (isLoading) return null;
   if (!isAuthenticated) return null;
 
   return (
@@ -21,7 +22,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="flex items-center gap-6">
           <span className="font-semibold text-gray-900">Financial Partner</span>
           <Link
-            href="/transactions"
+            href="/dashboard"
             className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
           >
             Transactions
