@@ -33,14 +33,16 @@ export function BalanceCard({
     down: TrendingDown,
   }[icon]
 
-  const variantStyles = {
-    default: "text-foreground",
-    income: "text-chart-1",
-    expense: "text-chart-2",
-  }
+  const isNegative = variant === "default" && amount < 0
+
+  const amountColor =
+    variant === "income" ? "text-chart-1"
+    : variant === "expense" ? "text-chart-2"
+    : isNegative ? "text-red-600"
+    : "text-foreground"
 
   const iconBgStyles = {
-    default: "bg-secondary",
+    default: isNegative ? "bg-red-50" : "bg-secondary",
     income: "bg-chart-1/10",
     expense: "bg-chart-2/10",
   }
@@ -52,12 +54,12 @@ export function BalanceCard({
           {title}
         </CardTitle>
         <div className={`rounded-lg p-2 ${iconBgStyles[variant]}`}>
-          <IconComponent className={`h-4 w-4 ${variantStyles[variant]}`} />
+          <IconComponent className={`h-4 w-4 ${amountColor}`} />
         </div>
       </CardHeader>
       <CardContent>
-        <div className={`text-2xl font-bold ${variantStyles[variant]}`}>
-          {variant === "expense" ? "-" : ""}{formatCurrency(Math.abs(amount))}
+        <div className={`text-2xl font-bold ${amountColor}`}>
+          {variant === "expense" ? "-" : ""}{formatCurrency(variant === "default" ? amount : Math.abs(amount))}
         </div>
         {trend !== undefined && (
           <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
