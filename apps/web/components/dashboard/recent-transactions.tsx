@@ -2,7 +2,6 @@
 
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   ArrowUpRight,
@@ -24,15 +23,23 @@ interface RecentTransactionsProps {
   transactions: Transaction[]
 }
 
-const categoryColors: Record<string, string> = {
-  "Housing / Rent": "bg-chart-3/20 text-chart-3",
-  "Utilities": "bg-chart-4/20 text-chart-4",
-  "Food / Groceries": "bg-chart-1/20 text-chart-1",
-  "Entertainment": "bg-chart-5/20 text-chart-5",
-  "Transportation": "bg-chart-2/20 text-chart-2",
-  "Salary": "bg-chart-1/20 text-chart-1",
-  "Freelance": "bg-primary/20 text-primary",
-  "default": "bg-muted text-muted-foreground",
+const CATEGORY_STYLES: Record<string, string> = {
+  housing:        'bg-amber-100 text-amber-700 border-amber-100 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-900/30',
+  utilities:      'bg-cyan-100 text-cyan-700 border-cyan-100 dark:bg-cyan-900/30 dark:text-cyan-300 dark:border-cyan-900/30',
+  services:       'bg-slate-100 text-slate-600 border-slate-100 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-800',
+  transportation: 'bg-blue-100 text-blue-700 border-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-900/30',
+  food:           'bg-green-100 text-green-700 border-green-100 dark:bg-green-900/30 dark:text-green-300 dark:border-green-900/30',
+  restaurants:    'bg-red-100 text-red-600 border-red-100 dark:bg-red-900/30 dark:text-red-300 dark:border-red-900/30',
+  entertainment:  'bg-purple-100 text-purple-700 border-purple-100 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-900/30',
+  health:         'bg-rose-100 text-rose-700 border-rose-100 dark:bg-rose-900/30 dark:text-rose-300 dark:border-rose-900/30',
+  insurance:      'bg-indigo-100 text-indigo-700 border-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-900/30',
+  family_support: 'bg-pink-100 text-pink-700 border-pink-100 dark:bg-pink-900/30 dark:text-pink-300 dark:border-pink-900/30',
+  education:      'bg-sky-100 text-sky-700 border-sky-100 dark:bg-sky-900/30 dark:text-sky-300 dark:border-sky-900/30',
+  debt_payments:  'bg-orange-100 text-orange-700 border-orange-100 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-900/30',
+  subscriptions:  'bg-violet-100 text-violet-700 border-violet-100 dark:bg-violet-900/30 dark:text-violet-300 dark:border-violet-900/30',
+  savings:        'bg-emerald-100 text-emerald-700 border-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-900/30',
+  other:          'bg-gray-100 text-gray-600 border-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-800',
+  income:         'bg-teal-100 text-teal-700 border-teal-100 dark:bg-teal-900/30 dark:text-teal-300 dark:border-teal-900/30',
 }
 
 export function RecentTransactions({ transactions }: RecentTransactionsProps) {
@@ -86,16 +93,18 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
                 </div>
                 <div>
                   <p className="text-sm font-medium">{transaction.description}</p>
-                  <div className="flex items-center gap-2 mt-0.5">
+                  <div className="flex items-center gap-1.5 mt-0.5">
                     <span className="text-xs text-muted-foreground">
                       {formatDate(transaction.date)}
                     </span>
-                    <Badge 
-                      variant="secondary" 
-                      className={`text-[10px] px-1.5 py-0 ${categoryColors[transaction.category] || categoryColors.default}`}
-                    >
-                      {transaction.category}
-                    </Badge>
+                    <span>·</span>
+                    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium ${
+                      CATEGORY_STYLES[transaction.category] ?? (transaction.type === 'income' ? CATEGORY_STYLES.income : CATEGORY_STYLES.other)
+                    }`}>
+                      {transaction.category
+                        ? transaction.category.replace(/_/g, ' ')
+                        : transaction.type === 'income' ? 'Income' : '—'}
+                    </span>
                   </div>
                 </div>
               </div>

@@ -23,6 +23,25 @@ function formatDate(date: string) {
   });
 }
 
+const CATEGORY_STYLES: Record<string, string> = {
+  housing:        'bg-amber-100 text-amber-700 border-amber-100 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-900/30',
+  utilities:      'bg-cyan-100 text-cyan-700 border-cyan-100 dark:bg-cyan-900/30 dark:text-cyan-300 dark:border-cyan-900/30',
+  services:       'bg-slate-100 text-slate-600 border-slate-100 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-800',
+  transportation: 'bg-blue-100 text-blue-700 border-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-900/30',
+  food:           'bg-green-100 text-green-700 border-green-100 dark:bg-green-900/30 dark:text-green-300 dark:border-green-900/30',
+  restaurants:    'bg-red-100 text-red-600 border-red-100 dark:bg-red-900/30 dark:text-red-300 dark:border-red-900/30',
+  entertainment:  'bg-purple-100 text-purple-700 border-purple-100 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-900/30',
+  health:         'bg-rose-100 text-rose-700 border-rose-100 dark:bg-rose-900/30 dark:text-rose-300 dark:border-rose-900/30',
+  insurance:      'bg-indigo-100 text-indigo-700 border-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-900/30',
+  family_support: 'bg-pink-100 text-pink-700 border-pink-100 dark:bg-pink-900/30 dark:text-pink-300 dark:border-pink-900/30',
+  education:      'bg-sky-100 text-sky-700 border-sky-100 dark:bg-sky-900/30 dark:text-sky-300 dark:border-sky-900/30',
+  debt_payments:  'bg-orange-100 text-orange-700 border-orange-100 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-900/30',
+  subscriptions:  'bg-violet-100 text-violet-700 border-violet-100 dark:bg-violet-900/30 dark:text-violet-300 dark:border-violet-900/30',
+  savings:        'bg-emerald-100 text-emerald-700 border-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-900/30',
+  other:          'bg-gray-100 text-gray-600 border-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-800',
+  income:         'bg-teal-100 text-teal-700 border-teal-100 dark:bg-teal-900/30 dark:text-teal-300 dark:border-teal-900/30',
+};
+
 export default function TransactionsPage() {
   const [month, setMonth] = useState(currentMonth);
   const [formOpen, setFormOpen] = useState(false);
@@ -106,12 +125,16 @@ export default function TransactionsPage() {
 
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">{t.description}</p>
-                <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                  {t.category
-                    ? t.category.replace(/_/g, ' ')
-                    : t.type === 'income'
-                    ? 'Income'
-                    : '—'}
+                <p className="text-muted-foreground mt-0.5 flex items-center gap-1.5" style={{ fontSize: 11 }}>
+                  {formatDate(t.date)}
+                  <span>·</span>
+                  {t.category || t.type === 'income' ? (
+                    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium ${
+                      CATEGORY_STYLES[t.category ?? 'income'] ?? CATEGORY_STYLES.other
+                    }`}>
+                      {t.category ? t.category.replace(/_/g, ' ') : 'Income'}
+                    </span>
+                  ) : '—'}
                 </p>
               </div>
 
@@ -125,10 +148,6 @@ export default function TransactionsPage() {
                 }`}
               >
                 {formatAmount(t)}
-              </span>
-
-              <span className="flex-shrink-0 text-xs text-muted-foreground w-12 text-right">
-                {formatDate(t.date)}
               </span>
             </button>
           ))}

@@ -50,7 +50,7 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[220px] w-full">
+        <div className="h-[220px] w-full [&_svg]:outline-none">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}
@@ -78,6 +78,7 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
                 width={40}
               />
               <Tooltip
+                cursor={{ fill: "var(--color-muted)", opacity: 0.15 }}
                 contentStyle={{
                   backgroundColor: "var(--color-card)",
                   border: "1px solid var(--color-border)",
