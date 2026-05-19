@@ -27,9 +27,6 @@ export class Transaction {
   @Column()
   recurrence: string;
 
-  @Column()
-  status: string;
-
   @Column({ type: 'decimal', precision: 12, scale: 2 })
   amount: number;
 

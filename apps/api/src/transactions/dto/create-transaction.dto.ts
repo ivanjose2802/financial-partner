@@ -12,7 +12,6 @@ import { EXPENSE_CATEGORIES } from '@financial-partner/shared';
 
 const TRANSACTION_TYPES = ['income', 'expense'] as const;
 const RECURRENCES = ['one_time', 'recurring'] as const;
-const STATUSES = ['completed', 'scheduled'] as const;
 
 export class CreateTransactionDto {
   @ApiProperty({ enum: TRANSACTION_TYPES })
@@ -22,10 +21,6 @@ export class CreateTransactionDto {
   @ApiProperty({ enum: RECURRENCES })
   @IsIn(RECURRENCES)
   recurrence: string;
-
-  @ApiProperty({ enum: STATUSES })
-  @IsIn(STATUSES)
-  status: string;
 
   @ApiProperty({ example: 1500.0 })
   @IsNumber()

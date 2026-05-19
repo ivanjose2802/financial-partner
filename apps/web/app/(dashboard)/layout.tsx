@@ -53,25 +53,28 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </div>
 
-        {/* Desktop right side */}
-        <div className="hidden md:flex items-center gap-4">
-          <span className="text-sm text-muted-foreground">{user?.email}</span>
+        {/* Right side */}
+        <div className="flex items-center gap-1">
+          {/* Desktop: email + logout */}
+          <div className="hidden md:flex items-center gap-4">
+            <span className="text-sm text-muted-foreground">{user?.email}</span>
+            <button
+              onClick={() => { logout(); router.push('/login'); }}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Logout
+            </button>
+          </div>
+
+          {/* Mobile hamburger */}
           <button
-            onClick={() => { logout(); router.push('/login'); }}
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            onClick={() => setMenuOpen((o) => !o)}
+            className="md:hidden rounded-md p-2 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+            aria-label="Toggle menu"
           >
-            Logout
+            {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
-
-        {/* Mobile hamburger */}
-        <button
-          onClick={() => setMenuOpen((o) => !o)}
-          className="md:hidden rounded-md p-2 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-          aria-label="Toggle menu"
-        >
-          {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
       </nav>
 
       {/* Mobile slide-down menu — overlays content */}

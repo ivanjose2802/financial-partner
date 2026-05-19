@@ -38,7 +38,6 @@ function defaultForm(t?: Transaction): FormState {
   return {
     type: t?.type ?? 'expense',
     recurrence: t?.recurrence ?? 'one_time',
-    status: t?.status ?? 'completed',
     amount: t?.amount != null ? String(parseFloat(String(t.amount))) : '',
     description: t?.description ?? '',
     category: t?.category ?? undefined,
@@ -105,7 +104,6 @@ export default function TransactionForm({ transaction, onClose }: Props) {
     const payload: CreateTransactionPayload = {
       type: form.type as CreateTransactionPayload['type'],
       recurrence: form.recurrence as CreateTransactionPayload['recurrence'],
-      status: form.status as CreateTransactionPayload['status'],
       amount,
       description: form.description,
       date: form.date,
@@ -220,30 +218,17 @@ export default function TransactionForm({ transaction, onClose }: Props) {
             />
           </div>
 
-          {/* Recurrence + Status row */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Recurrence</label>
-              <select
-                value={form.recurrence}
-                onChange={set('recurrence')}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
-              >
-                <option value="one_time">One time</option>
-                <option value="recurring">Recurring</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-              <select
-                value={form.status}
-                onChange={set('status')}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
-              >
-                <option value="completed">Completed</option>
-                <option value="scheduled">Scheduled</option>
-              </select>
-            </div>
+          {/* Recurrence */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Recurrence</label>
+            <select
+              value={form.recurrence}
+              onChange={set('recurrence')}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
+            >
+              <option value="one_time">One time</option>
+              <option value="recurring">Recurring</option>
+            </select>
           </div>
 
           {error && (

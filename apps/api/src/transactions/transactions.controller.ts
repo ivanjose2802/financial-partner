@@ -33,21 +33,18 @@ export class TransactionsController {
   @Get()
   @ApiQuery({ name: 'month', required: false, description: 'YYYY-MM' })
   @ApiQuery({ name: 'type', required: false, enum: ['income', 'expense'] })
-  @ApiQuery({ name: 'status', required: false, enum: ['completed', 'scheduled'] })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   findAll(
     @Request() req,
     @Query('month') month?: string,
     @Query('type') type?: string,
-    @Query('status') status?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
     return this.service.findAll(req.user.id, {
       month,
       type,
-      status,
       page: page ? parseInt(page, 10) : undefined,
       limit: limit ? parseInt(limit, 10) : undefined,
     });

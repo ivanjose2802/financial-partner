@@ -1,6 +1,5 @@
 export type TransactionType = 'income' | 'expense';
 export type Recurrence = 'one_time' | 'recurring';
-export type TransactionStatus = 'completed' | 'scheduled';
 export type ExpenseCategory =
   | 'housing'
   | 'utilities'
@@ -41,7 +40,6 @@ export interface Transaction {
   userId: string;
   type: TransactionType;
   recurrence: Recurrence;
-  status: TransactionStatus;
   amount: number;
   description: string;
   category?: ExpenseCategory;

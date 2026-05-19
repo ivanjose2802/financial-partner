@@ -44,7 +44,6 @@ import {
 import type {
   Transaction,
   TransactionType,
-  TransactionStatus,
   Recurrence,
   ExpenseCategory,
   PaginatedResponse,
@@ -52,12 +51,11 @@ import type {
 } from '@financial-partner/shared';
 
 export { EXPENSE_CATEGORIES };
-export type { Transaction, TransactionType, TransactionStatus, Recurrence, ExpenseCategory, DashboardResponse };
+export type { Transaction, TransactionType, Recurrence, ExpenseCategory, DashboardResponse };
 
 export interface CreateTransactionPayload {
   type: TransactionType;
   recurrence: Recurrence;
-  status: TransactionStatus;
   amount: number;
   description: string;
   category?: ExpenseCategory;
@@ -69,7 +67,6 @@ export interface UpdateTransactionPayload extends Partial<CreateTransactionPaylo
 export interface TransactionFilters {
   month?: string;
   type?: TransactionType;
-  status?: TransactionStatus;
   page?: number;
   limit?: number;
 }
@@ -79,7 +76,6 @@ export const transactionsApi = {
     const params = new URLSearchParams();
     if (filters.month) params.set('month', filters.month);
     if (filters.type) params.set('type', filters.type);
-    if (filters.status) params.set('status', filters.status);
     if (filters.page) params.set('page', String(filters.page));
     if (filters.limit) params.set('limit', String(filters.limit));
     const qs = params.toString();

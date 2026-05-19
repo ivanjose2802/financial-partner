@@ -111,17 +111,6 @@ export default function TransactionsPage() {
                 </p>
               </div>
 
-              {/* Hidden on mobile */}
-              <span
-                className={`hidden sm:inline-flex flex-shrink-0 text-xs px-2 py-0.5 rounded-full font-medium ${
-                  t.status === 'scheduled'
-                    ? 'bg-amber-100 text-amber-700'
-                    : 'bg-gray-100 text-gray-500'
-                }`}
-              >
-                {t.status}
-              </span>
-
               {t.recurrence === 'recurring' && (
                 <span className="hidden sm:inline flex-shrink-0 text-xs text-blue-500">recurring</span>
               )}

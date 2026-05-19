@@ -9,7 +9,6 @@ import { PaginatedResponse } from '@financial-partner/shared';
 export interface TransactionFilters {
   month?: string;
   type?: string;
-  status?: string;
   page?: number;
   limit?: number;
 }
@@ -30,7 +29,7 @@ export class TransactionsService {
     userId: string,
     filters: TransactionFilters = {},
   ): Promise<PaginatedResponse<Transaction>> {
-    const { month, type, status, page = 1, limit = 20 } = filters;
+    const { month, type, page = 1, limit = 20 } = filters;
 
     const qb = this.repo
       .createQueryBuilder('t')
@@ -43,9 +42,6 @@ export class TransactionsService {
     }
     if (type) {
       qb.andWhere('t.type = :type', { type });
-    }
-    if (status) {
-      qb.andWhere('t.status = :status', { status });
     }
 
     const [data, total] = await qb

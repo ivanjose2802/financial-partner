@@ -13,9 +13,6 @@ export class TransactionResponseDto {
   @ApiProperty({ enum: ['one_time', 'recurring'] })
   recurrence: string;
 
-  @ApiProperty({ enum: ['completed', 'scheduled'] })
-  status: string;
-
   @ApiProperty()
   amount: number;
 

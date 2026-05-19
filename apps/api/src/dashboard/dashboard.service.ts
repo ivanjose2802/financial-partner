@@ -30,14 +30,14 @@ export class DashboardService {
 
     const [currentAgg, prevAgg, scheduledAgg, recentRaw, upcomingRaw, cashFlowRaw] =
       await Promise.all([
-        // A — current month completed aggregations
+        // A — current month completed aggregations (date <= today)
         this.repo
           .createQueryBuilder('t')
           .select('t.type', 'type')
           .addSelect('SUM(t.amount)', 'total')
           .where('t.user_id = :userId', { userId })
           .andWhere("to_char(t.date, 'YYYY-MM') = :month", { month })
-          .andWhere('t.status = :status', { status: 'completed' })
+          .andWhere('t.date <= :today', { today })
           .groupBy('t.type')
           .getRawMany<{ type: string; total: string }>(),
 
@@ -48,37 +48,36 @@ export class DashboardService {
           .addSelect('SUM(t.amount)', 'total')
           .where('t.user_id = :userId', { userId })
           .andWhere("to_char(t.date, 'YYYY-MM') = :prevMonth", { prevMonth })
-          .andWhere('t.status = :status', { status: 'completed' })
+          .andWhere('t.date <= :today', { today })
           .groupBy('t.type')
           .getRawMany<{ type: string; total: string }>(),
 
-        // C — current month scheduled aggregations (for projected balance)
+        // C — current month scheduled aggregations (date > today, for projected balance)
         this.repo
           .createQueryBuilder('t')
           .select('t.type', 'type')
           .addSelect('SUM(t.amount)', 'total')
           .where('t.user_id = :userId', { userId })
           .andWhere("to_char(t.date, 'YYYY-MM') = :month", { month })
-          .andWhere('t.status = :status', { status: 'scheduled' })
+          .andWhere('t.date > :today', { today })
           .groupBy('t.type')
           .getRawMany<{ type: string; total: string }>(),
 
-        // D — last 5 completed transactions (no month filter)
+        // D — last 5 past transactions (date <= today, no month filter)
         this.repo
           .createQueryBuilder('t')
           .where('t.user_id = :userId', { userId })
-          .andWhere('t.status = :status', { status: 'completed' })
+          .andWhere('t.date <= :today', { today })
           .orderBy('t.date', 'DESC')
           .addOrderBy('t.createdAt', 'DESC')
           .take(5)
           .getMany(),
 
-        // E — next 5 scheduled transactions from today forward
+        // E — next 5 upcoming transactions (date > today)
         this.repo
           .createQueryBuilder('t')
           .where('t.user_id = :userId', { userId })
-          .andWhere('t.status = :status', { status: 'scheduled' })
-          .andWhere('t.date >= :today', { today })
+          .andWhere('t.date > :today', { today })
           .orderBy('t.date', 'ASC')
           .take(5)
           .getMany(),
@@ -90,7 +89,7 @@ export class DashboardService {
           .addSelect('t.type', 'type')
           .addSelect('SUM(t.amount)', 'total')
           .where('t.user_id = :userId', { userId })
-          .andWhere('t.status = :status', { status: 'completed' })
+          .andWhere('t.date <= :today', { today })
           .andWhere("to_char(t.date, 'YYYY-MM') >= :startMonth", { startMonth })
           .andWhere("to_char(t.date, 'YYYY-MM') <= :month", { month })
           .groupBy("to_char(t.date, 'YYYY-MM'), t.type")
@@ -183,7 +182,6 @@ function normalizeTransaction(t: TransactionEntity): Transaction {
     userId: t.userId,
     type: t.type as Transaction['type'],
     recurrence: t.recurrence as Transaction['recurrence'],
-    status: t.status as Transaction['status'],
     amount: Number(t.amount),
     description: t.description,
     category: (t.category ?? (t.type === 'income' ? 'income' : 'other')) as Transaction['category'],
