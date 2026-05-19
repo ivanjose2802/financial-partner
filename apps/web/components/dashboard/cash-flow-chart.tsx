@@ -24,6 +24,8 @@ interface CashFlowChartProps {
 }
 
 export function CashFlowChart({ data }: CashFlowChartProps) {
+  const chartData = data.slice(-3)
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -31,6 +33,12 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(value)
+  }
+
+  const formatYAxis = (value: number) => {
+    if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(value % 1_000_000 === 0 ? 0 : 1)}M`
+    if (value >= 1_000) return `$${(value / 1_000).toFixed(value % 1_000 === 0 ? 0 : 1)}k`
+    return `$${value}`
   }
 
   return (
@@ -42,25 +50,32 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[280px] w-full">
+        <div className="h-[220px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-              <CartesianGrid 
-                strokeDasharray="3 3" 
-                stroke="var(--color-border)" 
+            <BarChart
+              data={chartData}
+              margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+              barCategoryGap="25%"
+              barGap={6}
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="var(--color-border)"
+                strokeOpacity={0.4}
                 vertical={false}
               />
-              <XAxis 
-                dataKey="month" 
-                tick={{ fill: "var(--color-muted-foreground)", fontSize: 12 }}
+              <XAxis
+                dataKey="month"
+                tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }}
                 tickLine={false}
                 axisLine={false}
               />
-              <YAxis 
-                tick={{ fill: "var(--color-muted-foreground)", fontSize: 12 }}
+              <YAxis
+                tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(value) => `$${value / 1000}k`}
+                tickFormatter={formatYAxis}
+                width={40}
               />
               <Tooltip
                 contentStyle={{
@@ -75,24 +90,24 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
                   name === "income" ? "Income" : "Expenses",
                 ]}
               />
-              <Legend 
+              <Legend
                 formatter={(value) => (
                   <span className="text-sm text-muted-foreground capitalize">
-                    {value}
+                    {value === "income" ? "Income" : "Expenses"}
                   </span>
                 )}
               />
-              <Bar 
-                dataKey="income" 
-                fill="var(--color-chart-1)" 
+              <Bar
+                dataKey="income"
+                fill="var(--color-chart-1)"
                 radius={[4, 4, 0, 0]}
-                maxBarSize={40}
+                maxBarSize={72}
               />
-              <Bar 
-                dataKey="expenses" 
-                fill="var(--color-chart-2)" 
+              <Bar
+                dataKey="expenses"
+                fill="var(--color-chart-2)"
                 radius={[4, 4, 0, 0]}
-                maxBarSize={40}
+                maxBarSize={72}
               />
             </BarChart>
           </ResponsiveContainer>

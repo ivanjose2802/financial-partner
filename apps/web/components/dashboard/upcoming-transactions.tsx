@@ -51,7 +51,7 @@ export function UpcomingTransactions({ transactions }: UpcomingTransactionsProps
           {transactions.length} scheduled
         </Badge>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-2">
         {transactions.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-4">
             No upcoming transactions
@@ -60,11 +60,11 @@ export function UpcomingTransactions({ transactions }: UpcomingTransactionsProps
           transactions.map((transaction) => (
             <div
               key={transaction.id}
-              className="flex items-center justify-between rounded-lg border border-border/50 bg-secondary/30 p-3"
+              className="flex items-center justify-between rounded-lg border border-border/50 bg-secondary/30 p-2"
             >
               <div className="flex items-center gap-3">
                 <div
-                  className={`rounded-full p-2 ${
+                  className={`rounded-full p-1.5 ${
                     transaction.type === "income"
                       ? "bg-chart-1/10 text-chart-1"
                       : "bg-chart-2/10 text-chart-2"

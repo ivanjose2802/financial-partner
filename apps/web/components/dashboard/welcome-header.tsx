@@ -28,7 +28,7 @@ export function WelcomeHeader({ userName, currentMonth, onAddTransaction }: Welc
         </p>
       </div>
       <div className="flex items-center gap-2">
-        <Button className="gap-2" onClick={onAddTransaction}>
+        <Button className="gap-2 hidden sm:flex" onClick={onAddTransaction}>
           <Plus className="h-4 w-4" />
           Add Transaction
         </Button>

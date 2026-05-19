@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Plus } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
 import { useDashboard } from '@/hooks/useDashboard'
 import { WelcomeHeader } from '@/components/dashboard/welcome-header'
@@ -96,6 +97,15 @@ export default function DashboardPage() {
           <UpcomingTransactions transactions={data.upcomingTransactions} />
         </div>
       </div>
+
+      {/* FAB — mobile only */}
+      <button
+        onClick={() => setFormOpen(true)}
+        className="sm:hidden fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-primary px-5 py-3.5 text-sm font-semibold text-primary-foreground shadow-lg hover:bg-primary/90 active:scale-95 transition-all"
+      >
+        <Plus className="h-5 w-5" />
+        Add
+      </button>
 
       {formOpen && <TransactionForm onClose={() => setFormOpen(false)} />}
     </>

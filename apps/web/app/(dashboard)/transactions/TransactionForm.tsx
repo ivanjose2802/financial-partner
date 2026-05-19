@@ -57,6 +57,11 @@ function formatCurrency(raw: string): string {
   return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+const inputClass =
+  'w-full rounded-lg border border-border bg-background text-foreground px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none placeholder:text-muted-foreground';
+
+const labelClass = 'block text-sm font-medium text-foreground mb-1';
+
 export default function TransactionForm({ transaction, onClose }: Props) {
   const qc = useQueryClient();
   const [form, setForm] = useState<FormState>(() => defaultForm(transaction));
@@ -118,19 +123,19 @@ export default function TransactionForm({ transaction, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+      <div className="bg-card rounded-xl shadow-xl w-full max-w-md p-6 overflow-hidden">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-lg font-semibold text-foreground">
             {transaction ? 'Edit transaction' : 'New transaction'}
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none">
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground text-xl leading-none transition-colors">
             &times;
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Type toggle */}
-          <div className="flex rounded-lg overflow-hidden border border-gray-300">
+          <div className="flex rounded-lg overflow-hidden border border-border">
             {(['income', 'expense'] as const).map((t) => (
               <button
                 key={t}
@@ -139,9 +144,9 @@ export default function TransactionForm({ transaction, onClose }: Props) {
                 className={`flex-1 py-2 text-sm font-medium transition-colors ${
                   form.type === t
                     ? t === 'income'
-                      ? 'bg-green-600 text-white'
-                      : 'bg-red-500 text-white'
-                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                      ? 'bg-chart-1 text-white'
+                      : 'bg-chart-2 text-white'
+                    : 'bg-card text-muted-foreground hover:bg-accent'
                 }`}
               >
                 {t.charAt(0).toUpperCase() + t.slice(1)}
@@ -151,9 +156,9 @@ export default function TransactionForm({ transaction, onClose }: Props) {
 
           {/* Amount */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+            <label className={labelClass}>Amount</label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm select-none">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm select-none">$</span>
               <input
                 type="text"
                 inputMode="decimal"
@@ -169,32 +174,32 @@ export default function TransactionForm({ transaction, onClose }: Props) {
                   setForm((prev) => ({ ...prev, amount: cleaned }));
                 }}
                 required
-                className="w-full rounded-lg border border-gray-300 pl-7 pr-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
+                className={`${inputClass} pl-7`}
               />
             </div>
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <label className={labelClass}>Description</label>
             <input
               type="text"
               placeholder={DESCRIPTION_PLACEHOLDER[form.type]}
               value={form.description}
               onChange={set('description')}
               required
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
+              className={inputClass}
             />
           </div>
 
           {/* Category — expenses only */}
           {form.type === 'expense' && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+              <label className={labelClass}>Category</label>
               <select
                 value={form.category ?? ''}
                 onChange={set('category')}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
+                className={inputClass}
               >
                 <option value="">Select a category</option>
                 {(EXPENSE_CATEGORIES as readonly string[]).map((c) => (
@@ -208,23 +213,23 @@ export default function TransactionForm({ transaction, onClose }: Props) {
 
           {/* Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+            <label className={labelClass}>Date</label>
             <input
               type="date"
               value={form.date}
               onChange={set('date')}
               required
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
+              className={`${inputClass} min-w-0`}
             />
           </div>
 
           {/* Recurrence */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Recurrence</label>
+            <label className={labelClass}>Recurrence</label>
             <select
               value={form.recurrence}
               onChange={set('recurrence')}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
+              className={inputClass}
             >
               <option value="one_time">One time</option>
               <option value="recurring">Recurring</option>
@@ -232,7 +237,7 @@ export default function TransactionForm({ transaction, onClose }: Props) {
           </div>
 
           {error && (
-            <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>
+            <p className="text-sm text-destructive bg-destructive/10 rounded-lg px-3 py-2">{error}</p>
           )}
 
           <div className="flex gap-3 pt-1">
@@ -243,7 +248,7 @@ export default function TransactionForm({ transaction, onClose }: Props) {
                 onClick={() => {
                   if (confirm('Delete this transaction?')) deleteMutation.mutate();
                 }}
-                className="px-4 py-2 text-sm rounded-lg border border-red-300 text-red-600 hover:bg-red-50 disabled:opacity-50 transition-colors"
+                className="px-4 py-2 text-sm rounded-lg border border-destructive/50 text-destructive hover:bg-destructive/10 disabled:opacity-50 transition-colors"
               >
                 Delete
               </button>
@@ -251,7 +256,7 @@ export default function TransactionForm({ transaction, onClose }: Props) {
             <button
               type="button"
               onClick={onClose}
-              className="ml-auto px-4 py-2 text-sm rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors"
+              className="ml-auto px-4 py-2 text-sm rounded-lg border border-border text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
             >
               Cancel
             </button>

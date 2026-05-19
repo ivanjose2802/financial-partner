@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
+  darkMode: 'class',
   content: [
     './app/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
@@ -9,44 +10,44 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: '#ffffff',
-        foreground: '#171717',
+        background: 'rgb(var(--background) / <alpha-value>)',
+        foreground: 'rgb(var(--foreground) / <alpha-value>)',
         card: {
-          DEFAULT: '#ffffff',
-          foreground: '#171717',
+          DEFAULT: 'rgb(var(--card) / <alpha-value>)',
+          foreground: 'rgb(var(--card-foreground) / <alpha-value>)',
         },
         popover: {
-          DEFAULT: '#ffffff',
-          foreground: '#171717',
+          DEFAULT: 'rgb(var(--popover) / <alpha-value>)',
+          foreground: 'rgb(var(--popover-foreground) / <alpha-value>)',
         },
         primary: {
-          DEFAULT: '#8b5a3c',
-          foreground: '#fafafa',
+          DEFAULT: 'rgb(var(--primary) / <alpha-value>)',
+          foreground: 'rgb(var(--primary-foreground) / <alpha-value>)',
         },
         secondary: {
-          DEFAULT: '#f5f5f5',
-          foreground: '#262626',
+          DEFAULT: 'rgb(var(--secondary) / <alpha-value>)',
+          foreground: 'rgb(var(--secondary-foreground) / <alpha-value>)',
         },
         muted: {
-          DEFAULT: '#f5f5f5',
-          foreground: '#737373',
+          DEFAULT: 'rgb(var(--muted) / <alpha-value>)',
+          foreground: 'rgb(var(--muted-foreground) / <alpha-value>)',
         },
         accent: {
-          DEFAULT: '#f5f5f5',
-          foreground: '#262626',
+          DEFAULT: 'rgb(var(--accent) / <alpha-value>)',
+          foreground: 'rgb(var(--accent-foreground) / <alpha-value>)',
         },
         destructive: {
-          DEFAULT: '#ef4444',
-          foreground: '#fafafa',
+          DEFAULT: 'rgb(var(--destructive) / <alpha-value>)',
+          foreground: 'rgb(var(--destructive-foreground) / <alpha-value>)',
         },
-        border: '#e5e5e5',
-        input: '#e5e5e5',
-        ring: '#a3a3a3',
-        'chart-1': '#0d9488',
-        'chart-2': '#f97316',
-        'chart-3': '#3b82f6',
-        'chart-4': '#eab308',
-        'chart-5': '#f59e0b',
+        border: 'rgb(var(--border) / <alpha-value>)',
+        input: 'rgb(var(--input) / <alpha-value>)',
+        ring: 'rgb(var(--ring) / <alpha-value>)',
+        'chart-1': 'rgb(var(--chart-1) / <alpha-value>)',
+        'chart-2': 'rgb(var(--chart-2) / <alpha-value>)',
+        'chart-3': 'rgb(var(--chart-3) / <alpha-value>)',
+        'chart-4': 'rgb(var(--chart-4) / <alpha-value>)',
+        'chart-5': 'rgb(var(--chart-5) / <alpha-value>)',
       },
       borderRadius: {
         lg: 'var(--radius)',

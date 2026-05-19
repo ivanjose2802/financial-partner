@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading, logout, user } = useAuth();
@@ -55,8 +56,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Right side */}
         <div className="flex items-center gap-1">
+          {/* Theme toggle — always visible */}
+          <ThemeToggle />
+
           {/* Desktop: email + logout */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-4 ml-2">
             <span className="text-sm text-muted-foreground">{user?.email}</span>
             <button
               onClick={() => { logout(); router.push('/login'); }}
