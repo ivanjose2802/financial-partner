@@ -48,10 +48,11 @@ import type {
   Recurrence,
   ExpenseCategory,
   PaginatedResponse,
+  DashboardResponse,
 } from '@financial-partner/shared';
 
 export { EXPENSE_CATEGORIES };
-export type { Transaction, TransactionType, TransactionStatus, Recurrence, ExpenseCategory };
+export type { Transaction, TransactionType, TransactionStatus, Recurrence, ExpenseCategory, DashboardResponse };
 
 export interface CreateTransactionPayload {
   type: TransactionType;
@@ -106,6 +107,15 @@ export const transactionsApi = {
       method: 'DELETE',
       headers: authHeaders(),
     }),
+};
+
+export const dashboardApi = {
+  getSummary: (month?: string): Promise<DashboardResponse> => {
+    const qs = month ? `?month=${encodeURIComponent(month)}` : '';
+    return request<DashboardResponse>(`/dashboard/summary${qs}`, {
+      headers: authHeaders(),
+    });
+  },
 };
 
 export const authApi = {

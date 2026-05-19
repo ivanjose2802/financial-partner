@@ -67,7 +67,10 @@ export default function TransactionForm({ transaction, onClose }: Props) {
   const set = (field: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
-  const invalidate = () => qc.invalidateQueries({ queryKey: ['transactions'] });
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ['transactions'] });
+    qc.invalidateQueries({ queryKey: ['dashboard'] });
+  };
 
   const createMutation = useMutation({
     mutationFn: (payload: CreateTransactionPayload) => transactionsApi.create(payload),
@@ -168,7 +171,7 @@ export default function TransactionForm({ transaction, onClose }: Props) {
                   setForm((prev) => ({ ...prev, amount: cleaned }));
                 }}
                 required
-                className="w-full rounded-lg border border-gray-300 pl-7 pr-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none"
+                className="w-full rounded-lg border border-gray-300 pl-7 pr-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
               />
             </div>
           </div>
@@ -182,7 +185,7 @@ export default function TransactionForm({ transaction, onClose }: Props) {
               value={form.description}
               onChange={set('description')}
               required
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
             />
           </div>
 
@@ -193,7 +196,7 @@ export default function TransactionForm({ transaction, onClose }: Props) {
               <select
                 value={form.category ?? ''}
                 onChange={set('category')}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
               >
                 <option value="">Select a category</option>
                 {(EXPENSE_CATEGORIES as readonly string[]).map((c) => (
@@ -213,7 +216,7 @@ export default function TransactionForm({ transaction, onClose }: Props) {
               value={form.date}
               onChange={set('date')}
               required
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
             />
           </div>
 
@@ -224,7 +227,7 @@ export default function TransactionForm({ transaction, onClose }: Props) {
               <select
                 value={form.recurrence}
                 onChange={set('recurrence')}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
               >
                 <option value="one_time">One time</option>
                 <option value="recurring">Recurring</option>
@@ -235,7 +238,7 @@ export default function TransactionForm({ transaction, onClose }: Props) {
               <select
                 value={form.status}
                 onChange={set('status')}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
               >
                 <option value="completed">Completed</option>
                 <option value="scheduled">Scheduled</option>
@@ -270,7 +273,7 @@ export default function TransactionForm({ transaction, onClose }: Props) {
             <button
               type="submit"
               disabled={isPending}
-              className="px-4 py-2 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60 transition-colors"
+              className="px-4 py-2 text-sm rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-60 transition-colors"
             >
               {isPending ? 'Saving...' : transaction ? 'Save changes' : 'Add transaction'}
             </button>

@@ -16,7 +16,7 @@ function formatAmount(t: Transaction) {
 }
 
 function formatDate(date: string) {
-  return new Date(date + 'T00:00:00').toLocaleDateString('en-US', {
+  return new Date(date.slice(0, 10) + 'T12:00:00').toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
   });
@@ -61,13 +61,13 @@ export default function TransactionsPage() {
             type="month"
             value={month}
             onChange={(e) => setMonth(e.target.value)}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none"
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
           />
           <button
             onClick={openCreate}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
           >
-            + New transaction
+            + Add transaction
           </button>
         </div>
       </div>
@@ -93,14 +93,12 @@ export default function TransactionsPage() {
                 i !== 0 ? 'border-t border-gray-100' : ''
               }`}
             >
-              {/* Type dot */}
               <span
                 className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
                   t.type === 'income' ? 'bg-green-500' : 'bg-red-400'
                 }`}
               />
 
-              {/* Description + category */}
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">{t.description}</p>
                 <p className="text-xs text-gray-400 mt-0.5 truncate">
@@ -112,7 +110,6 @@ export default function TransactionsPage() {
                 </p>
               </div>
 
-              {/* Status badge */}
               <span
                 className={`flex-shrink-0 text-xs px-2 py-0.5 rounded-full font-medium ${
                   t.status === 'scheduled'
@@ -123,12 +120,10 @@ export default function TransactionsPage() {
                 {t.status}
               </span>
 
-              {/* Recurrence */}
               {t.recurrence === 'recurring' && (
                 <span className="flex-shrink-0 text-xs text-blue-500">recurring</span>
               )}
 
-              {/* Amount */}
               <span
                 className={`flex-shrink-0 text-sm font-semibold tabular-nums ${
                   t.type === 'income' ? 'text-green-600' : 'text-red-500'
@@ -137,7 +132,6 @@ export default function TransactionsPage() {
                 {formatAmount(t)}
               </span>
 
-              {/* Date */}
               <span className="flex-shrink-0 text-xs text-gray-400 w-12 text-right">
                 {formatDate(t.date)}
               </span>

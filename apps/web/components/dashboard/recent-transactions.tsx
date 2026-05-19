@@ -1,11 +1,12 @@
 "use client"
 
+import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { 
-  ArrowUpRight, 
-  ArrowDownRight, 
+import {
+  ArrowUpRight,
+  ArrowDownRight,
   Receipt,
   ChevronRight
 } from "lucide-react"
@@ -45,8 +46,7 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
   }
 
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr)
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+    return new Date(dateStr.slice(0, 10) + 'T12:00:00').toLocaleDateString("en-US", { month: "short", day: "numeric" })
   }
 
   return (
@@ -56,9 +56,11 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
           <Receipt className="h-5 w-5 text-muted-foreground" />
           Recent Transactions
         </CardTitle>
-        <Button variant="ghost" size="sm" className="text-xs text-muted-foreground">
-          View All
-          <ChevronRight className="ml-1 h-3 w-3" />
+        <Button variant="ghost" size="sm" className="text-xs text-muted-foreground" asChild>
+          <Link href="/transactions">
+            View All
+            <ChevronRight className="ml-1 h-3 w-3" />
+          </Link>
         </Button>
       </CardHeader>
       <CardContent>

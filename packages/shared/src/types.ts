@@ -56,3 +56,26 @@ export interface PaginatedResponse<T> {
   page: number;
   limit: number;
 }
+
+export interface CashFlowPoint {
+  month: string;
+  income: number;
+  expenses: number;
+}
+
+export interface DashboardSummary {
+  totalIncome: number;
+  totalExpenses: number;
+  currentBalance: number;
+  projectedBalance: number;
+  incomeTrend: number | null;
+  expenseTrend: number | null;
+}
+
+export interface DashboardResponse {
+  currentMonth: string;
+  summary: DashboardSummary;
+  recentTransactions: Transaction[];
+  upcomingTransactions: Transaction[];
+  cashFlowData: CashFlowPoint[];
+}

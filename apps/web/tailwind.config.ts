@@ -20,7 +20,7 @@ const config: Config = {
           foreground: '#171717',
         },
         primary: {
-          DEFAULT: '#262626',
+          DEFAULT: '#8b5a3c',
           foreground: '#fafafa',
         },
         secondary: {
@@ -42,8 +42,8 @@ const config: Config = {
         border: '#e5e5e5',
         input: '#e5e5e5',
         ring: '#a3a3a3',
-        'chart-1': '#f97316',
-        'chart-2': '#0d9488',
+        'chart-1': '#0d9488',
+        'chart-2': '#f97316',
         'chart-3': '#3b82f6',
         'chart-4': '#eab308',
         'chart-5': '#f59e0b',

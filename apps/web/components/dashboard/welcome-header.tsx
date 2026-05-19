@@ -6,9 +6,10 @@ import { Plus, Bell } from "lucide-react"
 interface WelcomeHeaderProps {
   userName: string
   currentMonth: string
+  onAddTransaction: () => void
 }
 
-export function WelcomeHeader({ userName, currentMonth }: WelcomeHeaderProps) {
+export function WelcomeHeader({ userName, currentMonth, onAddTransaction }: WelcomeHeaderProps) {
   const getGreeting = () => {
     const hour = new Date().getHours()
     if (hour < 12) return "Good morning"
@@ -31,7 +32,7 @@ export function WelcomeHeader({ userName, currentMonth }: WelcomeHeaderProps) {
           <Bell className="h-4 w-4" />
           <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-chart-2" />
         </Button>
-        <Button className="gap-2">
+        <Button className="gap-2" onClick={onAddTransaction}>
           <Plus className="h-4 w-4" />
           Add Transaction
         </Button>
