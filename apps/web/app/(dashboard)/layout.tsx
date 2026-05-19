@@ -20,9 +20,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-6">
-          <span className="font-semibold text-gray-900">Financial Partner</span>
+          <Link href="/dashboard" className="font-semibold text-gray-900">
+            Financial Partner
+          </Link>
           <Link
             href="/dashboard"
+            className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            Overview
+          </Link>
+          <Link
+            href="/transactions"
             className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
           >
             Transactions

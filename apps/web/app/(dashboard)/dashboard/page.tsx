@@ -1,152 +1,66 @@
-'use client';
+'use client'
 
-import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
-import { transactionsApi, type Transaction } from '@/lib/api-client';
-import TransactionForm from './TransactionForm';
+import { useAuth } from '@/lib/auth-context'
+import { useDashboard } from '@/hooks/useDashboard'
+import { WelcomeHeader } from '@/components/dashboard/welcome-header'
+import { BalanceCard } from '@/components/dashboard/balance-card'
+import { CashFlowChart } from '@/components/dashboard/cash-flow-chart'
+import { RecentTransactions } from '@/components/dashboard/recent-transactions'
+import { FinancialHealth } from '@/components/dashboard/financial-health'
+import { UpcomingTransactions } from '@/components/dashboard/upcoming-transactions'
 
-function currentMonth() {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-}
-
-function formatAmount(t: Transaction) {
-  const sign = t.type === 'income' ? '+' : '-';
-  return `${sign}$${Number(t.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-}
-
-function formatDate(date: string) {
-  return new Date(date + 'T00:00:00').toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  });
-}
-
-export default function TransactionsPage() {
-  const [month, setMonth] = useState(currentMonth);
-  const [formOpen, setFormOpen] = useState(false);
-  const [editing, setEditing] = useState<Transaction | undefined>(undefined);
-
-  const { data, isLoading } = useQuery({
-    queryKey: ['transactions', month],
-    queryFn: () => transactionsApi.list({ month }),
-  });
-
-  const transactions = data?.data ?? [];
-
-  function openCreate() {
-    setEditing(undefined);
-    setFormOpen(true);
-  }
-
-  function openEdit(t: Transaction) {
-    setEditing(t);
-    setFormOpen(true);
-  }
-
-  function closeForm() {
-    setFormOpen(false);
-    setEditing(undefined);
-  }
+export default function DashboardPage() {
+  const { user } = useAuth()
+  const { data } = useDashboard()
 
   return (
-    <>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Transactions</h1>
-          <p className="text-sm text-gray-500 mt-1">{data?.total ?? 0} transactions</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <input
-            type="month"
-            value={month}
-            onChange={(e) => setMonth(e.target.value)}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none"
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <WelcomeHeader
+          userName={user?.name ?? user?.email ?? 'there'}
+          currentMonth={data.currentMonth}
+        />
+
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <BalanceCard
+            title="Balance of the Month"
+            amount={data.summary.currentBalance}
+            icon="wallet"
+            variant="default"
           />
-          <button
-            onClick={openCreate}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
-          >
-            + New transaction
-          </button>
+          <BalanceCard
+            title="Total Income"
+            amount={data.summary.totalIncome}
+            trend={data.summary.incomeTrend}
+            icon="up"
+            variant="income"
+          />
+          <BalanceCard
+            title="Total Expenses"
+            amount={data.summary.totalExpenses}
+            trend={data.summary.expenseTrend}
+            icon="down"
+            variant="expense"
+          />
+          <BalanceCard
+            title="Projected Balance"
+            amount={data.summary.projectedBalance}
+            icon="wallet"
+            variant="default"
+          />
+        </div>
+
+        <div className="mt-8 grid gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2 space-y-6">
+            <CashFlowChart data={data.cashFlowData} />
+            <RecentTransactions transactions={data.recentTransactions} />
+          </div>
+          <div className="space-y-6">
+            <FinancialHealth />
+            <UpcomingTransactions transactions={data.upcomingTransactions} />
+          </div>
         </div>
       </div>
-
-      {isLoading ? (
-        <div className="space-y-3">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-14 rounded-xl bg-gray-200 animate-pulse" />
-          ))}
-        </div>
-      ) : transactions.length === 0 ? (
-        <div className="text-center py-20 text-gray-400">
-          <p className="text-lg">No transactions for this month</p>
-          <p className="text-sm mt-1">Click &quot;New transaction&quot; to add one</p>
-        </div>
-      ) : (
-        <div className="bg-white rounded-xl ring-1 ring-gray-200 overflow-hidden">
-          {transactions.map((t, i) => (
-            <button
-              key={t.id}
-              onClick={() => openEdit(t)}
-              className={`w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-gray-50 transition-colors ${
-                i !== 0 ? 'border-t border-gray-100' : ''
-              }`}
-            >
-              {/* Type dot */}
-              <span
-                className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
-                  t.type === 'income' ? 'bg-green-500' : 'bg-red-400'
-                }`}
-              />
-
-              {/* Description + category */}
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">{t.description}</p>
-                <p className="text-xs text-gray-400 mt-0.5 truncate">
-                  {t.category
-                    ? t.category.replace(/_/g, ' ')
-                    : t.type === 'income'
-                    ? 'Income'
-                    : '—'}
-                </p>
-              </div>
-
-              {/* Status badge */}
-              <span
-                className={`flex-shrink-0 text-xs px-2 py-0.5 rounded-full font-medium ${
-                  t.status === 'scheduled'
-                    ? 'bg-amber-100 text-amber-700'
-                    : 'bg-gray-100 text-gray-500'
-                }`}
-              >
-                {t.status}
-              </span>
-
-              {/* Recurrence */}
-              {t.recurrence === 'recurring' && (
-                <span className="flex-shrink-0 text-xs text-blue-500">recurring</span>
-              )}
-
-              {/* Amount */}
-              <span
-                className={`flex-shrink-0 text-sm font-semibold tabular-nums ${
-                  t.type === 'income' ? 'text-green-600' : 'text-red-500'
-                }`}
-              >
-                {formatAmount(t)}
-              </span>
-
-              {/* Date */}
-              <span className="flex-shrink-0 text-xs text-gray-400 w-12 text-right">
-                {formatDate(t.date)}
-              </span>
-            </button>
-          ))}
-        </div>
-      )}
-
-      {formOpen && <TransactionForm transaction={editing} onClose={closeForm} />}
-    </>
-  );
+    </div>
+  )
 }
