@@ -6,6 +6,9 @@ import { useState } from 'react';
 import { authApi } from '../../../lib/api-client';
 import { useAuth } from '../../../lib/auth-context';
 
+const inputClass =
+  'w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20';
+
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
@@ -19,7 +22,6 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
       const { accessToken, user } = await authApi.login({ email, password });
       login(accessToken, user);
@@ -33,11 +35,11 @@ export default function LoginPage() {
 
   return (
     <>
-      <h2 className="mb-6 text-xl font-semibold text-gray-800">Sign in</h2>
+      <h2 className="mb-6 text-xl font-semibold text-foreground">Sign in</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+          <label className="mb-1.5 block text-sm font-medium text-foreground">
             Email
           </label>
           <input
@@ -45,13 +47,13 @@ export default function LoginPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+            className={inputClass}
             placeholder="you@example.com"
           />
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+          <label className="mb-1.5 block text-sm font-medium text-foreground">
             Password
           </label>
           <input
@@ -59,7 +61,7 @@ export default function LoginPage() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+            className={inputClass}
             placeholder="••••••••"
           />
         </div>
@@ -73,15 +75,15 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:opacity-60"
+          className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:opacity-60"
         >
           {loading ? 'Signing in…' : 'Sign in'}
         </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-gray-500">
+      <p className="mt-6 text-center text-sm text-muted-foreground">
         No account?{' '}
-        <Link href="/register" className="font-medium text-blue-600 hover:underline">
+        <Link href="/register" className="font-medium text-primary hover:underline">
           Create one
         </Link>
       </p>

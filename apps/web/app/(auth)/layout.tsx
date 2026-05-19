@@ -1,11 +1,16 @@
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
-        <h1 className="mb-8 text-center text-2xl font-bold text-gray-900">
-          Financial Partner
-        </h1>
-        <div className="rounded-xl bg-white p-8 shadow-sm ring-1 ring-gray-200">
+        <div className="mb-8 text-center">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            Financial Partner
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Take control of your finances
+          </p>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-8 shadow-md">
           {children}
         </div>
       </div>
