@@ -51,21 +51,22 @@ export default function TransactionsPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between mb-6">
+      {/* Header — stacks vertically on mobile */}
+      <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Transactions</h1>
           <p className="text-sm text-gray-500 mt-1">{data?.total ?? 0} transactions</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
           <input
             type="month"
             value={month}
             onChange={(e) => setMonth(e.target.value)}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
+            className="w-36 shrink-0 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
           />
           <button
             onClick={openCreate}
-            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+            className="flex-1 sm:flex-none rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors whitespace-nowrap"
           >
             + Add transaction
           </button>
@@ -81,7 +82,7 @@ export default function TransactionsPage() {
       ) : transactions.length === 0 ? (
         <div className="text-center py-20 text-gray-400">
           <p className="text-lg">No transactions for this month</p>
-          <p className="text-sm mt-1">Click &quot;New transaction&quot; to add one</p>
+          <p className="text-sm mt-1">Click &quot;Add transaction&quot; to add one</p>
         </div>
       ) : (
         <div className="bg-white rounded-xl ring-1 ring-gray-200 overflow-hidden">
@@ -110,8 +111,9 @@ export default function TransactionsPage() {
                 </p>
               </div>
 
+              {/* Hidden on mobile */}
               <span
-                className={`flex-shrink-0 text-xs px-2 py-0.5 rounded-full font-medium ${
+                className={`hidden sm:inline-flex flex-shrink-0 text-xs px-2 py-0.5 rounded-full font-medium ${
                   t.status === 'scheduled'
                     ? 'bg-amber-100 text-amber-700'
                     : 'bg-gray-100 text-gray-500'
@@ -121,7 +123,7 @@ export default function TransactionsPage() {
               </span>
 
               {t.recurrence === 'recurring' && (
-                <span className="flex-shrink-0 text-xs text-blue-500">recurring</span>
+                <span className="hidden sm:inline flex-shrink-0 text-xs text-blue-500">recurring</span>
               )}
 
               <span
