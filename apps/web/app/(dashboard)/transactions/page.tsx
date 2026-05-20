@@ -24,13 +24,18 @@ function formatDate(date: string) {
 }
 
 function sectionTotals(txs: Transaction[]) {
-  let income = 0, expenses = 0;
+  let inc = 0, exp = 0;
   for (const t of txs) {
-    if (t.type === 'income') income += Number(t.amount);
-    else expenses += Number(t.amount);
+    if (t.type === 'income') inc += Number(t.amount);
+    else exp += Number(t.amount);
   }
-  const fmt = (n: number) => n.toLocaleString('en-US', { minimumFractionDigits: 2 });
-  return { income: fmt(income), expenses: fmt(expenses) };
+  const fmt = (n: number) => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2 });
+  const net = inc - exp;
+  return {
+    income: fmt(inc),
+    expenses: fmt(exp),
+    net: (net >= 0 ? '+' : '-') + fmt(Math.abs(net)),
+  };
 }
 
 const CATEGORY_STYLES: Record<string, string> = {
@@ -70,6 +75,8 @@ export default function TransactionsPage() {
       return b.amount - a.amount;
     });
   const oneTime = transactions.filter(t => t.recurrence === 'one_time');
+  const recurringTotals = sectionTotals(recurring);
+  const oneTimeTotals = sectionTotals(oneTime);
 
   function renderRow(t: Transaction, i: number) {
     return (
@@ -165,34 +172,31 @@ export default function TransactionsPage() {
         </div>
       ) : (
         <div className="space-y-6">
-          {recurring.length > 0 && (() => {
-            const { income, expenses } = sectionTotals(recurring);
-            return (
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <Repeat className="h-4 w-4 text-muted-foreground" />
-                    <h2 className="text-sm font-semibold text-foreground">Recurring</h2>
-                  </div>
-                  <span className="text-xs text-muted-foreground">${income} in · ${expenses} out</span>
+          {recurring.length > 0 && (
+            <div>
+              <div className="mb-3">
+                <div className="flex items-center gap-2">
+                  <Repeat className="h-4 w-4 text-muted-foreground" />
+                  <h2 className="text-sm font-semibold text-foreground">Recurring</h2>
                 </div>
-                <div className="bg-card rounded-xl ring-1 ring-border overflow-hidden">
-                  {recurring.map((t, i) => renderRow(t, i))}
-                </div>
+                <p className="text-xs text-muted-foreground mt-1 pl-6">Net {recurringTotals.net}</p>
+                <p className="text-xs text-muted-foreground pl-6">{recurringTotals.income} income · {recurringTotals.expenses} expenses</p>
               </div>
-            );
-          })()}
+              <div className="bg-card rounded-xl ring-1 ring-border overflow-hidden">
+                {recurring.map((t, i) => renderRow(t, i))}
+              </div>
+            </div>
+          )}
 
           {oneTime.length > 0 && (
             <div>
-              <div className="flex items-center justify-between mb-3">
+              <div className="mb-3">
                 <div className="flex items-center gap-2">
                   <Receipt className="h-4 w-4 text-muted-foreground" />
                   <h2 className="text-sm font-semibold text-foreground">One-time</h2>
                 </div>
-                <span className="text-xs text-muted-foreground">
-                  {oneTime.length} transaction{oneTime.length !== 1 ? 's' : ''}
-                </span>
+                <p className="text-xs text-muted-foreground mt-1 pl-6">Net {oneTimeTotals.net}</p>
+                <p className="text-xs text-muted-foreground pl-6">{oneTimeTotals.income} income · {oneTimeTotals.expenses} expenses</p>
               </div>
               <div className="bg-card rounded-xl ring-1 ring-border overflow-hidden">
                 {oneTime.map((t, i) => renderRow(t, i))}
