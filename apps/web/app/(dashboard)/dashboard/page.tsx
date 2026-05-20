@@ -130,11 +130,19 @@ export default function DashboardPage() {
       <div className="mt-8 grid gap-6 lg:grid-cols-3 lg:items-start">
         <div className="lg:col-span-2 space-y-6">
           <CashFlowChart data={data.cashFlowData} className="h-96" />
+          <div className="lg:hidden">
+            <UpcomingTransactions transactions={data.upcomingTransactions} scheduledExpenses={data.summary.scheduledExpenses} />
+          </div>
+          <div className="lg:hidden">
+            <FinancialHealth />
+          </div>
           <RecentTransactions transactions={data.recentTransactions} />
         </div>
         <div className="grid gap-6 grid-rows-[1fr_auto]">
-          <FinancialHealth className="h-96" />
-          <UpcomingTransactions transactions={data.upcomingTransactions} scheduledExpenses={data.summary.scheduledExpenses} />
+          <FinancialHealth className="h-96 hidden lg:flex" />
+          <div className="hidden lg:block">
+            <UpcomingTransactions transactions={data.upcomingTransactions} scheduledExpenses={data.summary.scheduledExpenses} />
+          </div>
         </div>
       </div>
 
