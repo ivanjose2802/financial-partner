@@ -16,9 +16,10 @@ interface Transaction {
 
 interface UpcomingTransactionsProps {
   transactions: Transaction[]
+  scheduledExpenses: number
 }
 
-export function UpcomingTransactions({ transactions }: UpcomingTransactionsProps) {
+export function UpcomingTransactions({ transactions, scheduledExpenses }: UpcomingTransactionsProps) {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -42,11 +43,18 @@ export function UpcomingTransactions({ transactions }: UpcomingTransactionsProps
 
   return (
     <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="flex items-center gap-2 text-base font-semibold">
-          <CalendarClock className="h-5 w-5 text-muted-foreground" />
-          Upcoming Transactions
-        </CardTitle>
+      <CardHeader className="flex flex-row items-start justify-between">
+        <div>
+          <CardTitle className="flex items-center gap-2 text-base font-semibold">
+            <CalendarClock className="h-5 w-5 text-muted-foreground" />
+            Upcoming Transactions
+          </CardTitle>
+          {scheduledExpenses > 0 && (
+            <p className="text-xs text-chart-2 mt-1 pl-7">
+              −{formatCurrency(scheduledExpenses)} committed this month
+            </p>
+          )}
+        </div>
         <Badge variant="secondary" className="text-xs">
           {transactions.length} scheduled
         </Badge>

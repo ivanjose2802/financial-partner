@@ -34,7 +34,8 @@ function sectionTotals(txs: Transaction[]) {
   return {
     income: fmt(inc),
     expenses: fmt(exp),
-    net: (net >= 0 ? '+' : '-') + fmt(Math.abs(net)),
+    net: (net >= 0 ? '+' : '−') + fmt(Math.abs(net)),
+    netPositive: net >= 0,
   };
 }
 
@@ -179,8 +180,19 @@ export default function TransactionsPage() {
                   <Repeat className="h-4 w-4 text-muted-foreground" />
                   <h2 className="text-sm font-semibold text-foreground">Recurring</h2>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1 pl-6">Net {recurringTotals.net}</p>
-                <p className="text-xs text-muted-foreground pl-6">{recurringTotals.income} income · {recurringTotals.expenses} expenses</p>
+                <p className="text-[11px] text-muted-foreground opacity-60 mt-1 pl-6">
+                  Balance{' '}
+                  <span className={`font-medium opacity-100 ${recurringTotals.netPositive ? 'text-chart-1' : 'text-chart-2'}`}>
+                    {recurringTotals.net}
+                  </span>
+                </p>
+                <p className="text-[11px] pl-6 flex items-center gap-1">
+                  <span className="font-medium text-chart-1">{recurringTotals.income}</span>
+                  <span className="text-muted-foreground opacity-60">income</span>
+                  <span className="text-muted-foreground opacity-40">·</span>
+                  <span className="font-medium text-chart-2">{recurringTotals.expenses}</span>
+                  <span className="text-muted-foreground opacity-60">expenses</span>
+                </p>
               </div>
               <div className="bg-card rounded-xl ring-1 ring-border overflow-hidden">
                 {recurring.map((t, i) => renderRow(t, i))}
@@ -195,8 +207,19 @@ export default function TransactionsPage() {
                   <Receipt className="h-4 w-4 text-muted-foreground" />
                   <h2 className="text-sm font-semibold text-foreground">One-time</h2>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1 pl-6">Net {oneTimeTotals.net}</p>
-                <p className="text-xs text-muted-foreground pl-6">{oneTimeTotals.income} income · {oneTimeTotals.expenses} expenses</p>
+                <p className="text-[11px] text-muted-foreground opacity-60 mt-1 pl-6">
+                  Balance{' '}
+                  <span className={`font-medium opacity-100 ${oneTimeTotals.netPositive ? 'text-chart-1' : 'text-chart-2'}`}>
+                    {oneTimeTotals.net}
+                  </span>
+                </p>
+                <p className="text-[11px] pl-6 flex items-center gap-1">
+                  <span className="font-medium text-chart-1">{oneTimeTotals.income}</span>
+                  <span className="text-muted-foreground opacity-60">income</span>
+                  <span className="text-muted-foreground opacity-40">·</span>
+                  <span className="font-medium text-chart-2">{oneTimeTotals.expenses}</span>
+                  <span className="text-muted-foreground opacity-60">expenses</span>
+                </p>
               </div>
               <div className="bg-card rounded-xl ring-1 ring-border overflow-hidden">
                 {oneTime.map((t, i) => renderRow(t, i))}

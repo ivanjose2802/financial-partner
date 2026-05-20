@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart3 } from "lucide-react"
 import {
   BarChart,
@@ -21,9 +21,10 @@ interface CashFlowData {
 
 interface CashFlowChartProps {
   data: CashFlowData[]
+  className?: string
 }
 
-export function CashFlowChart({ data }: CashFlowChartProps) {
+export function CashFlowChart({ data, className }: CashFlowChartProps) {
   const chartData = data.slice(-3)
 
   const formatCurrency = (value: number) => {
@@ -42,15 +43,18 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
   }
 
   return (
-    <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+    <Card className={`border-border/50 bg-card/50 backdrop-blur-sm flex flex-col ${className ?? ''}`}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base font-semibold">
           <BarChart3 className="h-5 w-5 text-muted-foreground" />
           Monthly Cash Flow
         </CardTitle>
+        <CardDescription className="text-xs mt-0.5">
+          Current month includes scheduled transactions
+        </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="h-[220px] w-full [&_svg]:outline-none">
+      <CardContent className="flex flex-col flex-1 pb-4">
+        <div className="flex-1 w-full [&_svg]:outline-none">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}
