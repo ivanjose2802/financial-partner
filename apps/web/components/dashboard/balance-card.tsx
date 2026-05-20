@@ -52,7 +52,7 @@ export function BalanceCard({
   return (
     <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-base font-semibold">
+        <CardTitle className="text-base font-semibold text-muted-foreground">
           {title}
         </CardTitle>
         <div className={`rounded-lg p-2 ${iconBgStyles[variant]}`}>
