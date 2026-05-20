@@ -75,7 +75,7 @@ export default function DashboardPage() {
         />
         <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-base font-semibold">
               Income This Month
             </CardTitle>
             <div className="rounded-lg p-2 bg-chart-1/10">
@@ -101,7 +101,7 @@ export default function DashboardPage() {
         </Card>
         <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-base font-semibold">
               Expenses This Month
             </CardTitle>
             <div className="rounded-lg p-2 bg-chart-2/10">
