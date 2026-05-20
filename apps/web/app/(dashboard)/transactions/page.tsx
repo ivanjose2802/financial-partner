@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { Plus, Calendar } from 'lucide-react';
+import { Plus, Calendar, Repeat, Receipt } from 'lucide-react';
 import { transactionsApi, type Transaction } from '@/lib/api-client';
 import TransactionForm from './TransactionForm';
 
@@ -21,6 +21,16 @@ function formatDate(date: string) {
     month: 'short',
     day: 'numeric',
   });
+}
+
+function sectionTotals(txs: Transaction[]) {
+  let income = 0, expenses = 0;
+  for (const t of txs) {
+    if (t.type === 'income') income += Number(t.amount);
+    else expenses += Number(t.amount);
+  }
+  const fmt = (n: number) => n.toLocaleString('en-US', { minimumFractionDigits: 2 });
+  return { income: fmt(income), expenses: fmt(expenses) };
 }
 
 const CATEGORY_STYLES: Record<string, string> = {
@@ -53,6 +63,52 @@ export default function TransactionsPage() {
   });
 
   const transactions = data?.data ?? [];
+
+  const recurring = [...transactions.filter(t => t.recurrence === 'recurring')]
+    .sort((a, b) => {
+      if (a.type !== b.type) return a.type === 'income' ? -1 : 1;
+      return b.amount - a.amount;
+    });
+  const oneTime = transactions.filter(t => t.recurrence === 'one_time');
+
+  function renderRow(t: Transaction, i: number) {
+    return (
+      <button
+        key={t.id}
+        onClick={() => openEdit(t)}
+        className={`w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-accent transition-colors ${
+          i !== 0 ? 'border-t border-border/50' : ''
+        }`}
+      >
+        <span
+          className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+            t.type === 'income' ? 'bg-chart-1' : 'bg-chart-2'
+          }`}
+        />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-foreground truncate">{t.description}</p>
+          <p className="text-muted-foreground mt-0.5 flex items-center gap-1.5" style={{ fontSize: 11 }}>
+            {formatDate(t.date)}
+            <span>·</span>
+            {t.category || t.type === 'income' ? (
+              <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium ${
+                CATEGORY_STYLES[t.category ?? 'income'] ?? CATEGORY_STYLES.other
+              }`}>
+                {t.category ? t.category.replace(/_/g, ' ') : 'Income'}
+              </span>
+            ) : '—'}
+          </p>
+        </div>
+        <span
+          className={`flex-shrink-0 text-sm font-semibold tabular-nums ${
+            t.type === 'income' ? 'text-chart-1' : 'text-chart-2'
+          }`}
+        >
+          {formatAmount(t)}
+        </span>
+      </button>
+    );
+  }
 
   function openCreate() {
     setEditing(undefined);
@@ -108,49 +164,41 @@ export default function TransactionsPage() {
           <p className="text-sm mt-1">Click &quot;Add transaction&quot; to add one</p>
         </div>
       ) : (
-        <div className="bg-card rounded-xl ring-1 ring-border overflow-hidden">
-          {transactions.map((t, i) => (
-            <button
-              key={t.id}
-              onClick={() => openEdit(t)}
-              className={`w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-accent transition-colors ${
-                i !== 0 ? 'border-t border-border/50' : ''
-              }`}
-            >
-              <span
-                className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
-                  t.type === 'income' ? 'bg-chart-1' : 'bg-chart-2'
-                }`}
-              />
-
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground truncate">{t.description}</p>
-                <p className="text-muted-foreground mt-0.5 flex items-center gap-1.5" style={{ fontSize: 11 }}>
-                  {formatDate(t.date)}
-                  <span>·</span>
-                  {t.category || t.type === 'income' ? (
-                    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium ${
-                      CATEGORY_STYLES[t.category ?? 'income'] ?? CATEGORY_STYLES.other
-                    }`}>
-                      {t.category ? t.category.replace(/_/g, ' ') : 'Income'}
-                    </span>
-                  ) : '—'}
-                </p>
+        <div className="space-y-6">
+          {recurring.length > 0 && (() => {
+            const { income, expenses } = sectionTotals(recurring);
+            return (
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Repeat className="h-4 w-4 text-muted-foreground" />
+                    <h2 className="text-sm font-semibold text-foreground">Recurring</h2>
+                  </div>
+                  <span className="text-xs text-muted-foreground">${income} in · ${expenses} out</span>
+                </div>
+                <div className="bg-card rounded-xl ring-1 ring-border overflow-hidden">
+                  {recurring.map((t, i) => renderRow(t, i))}
+                </div>
               </div>
+            );
+          })()}
 
-              {t.recurrence === 'recurring' && (
-                <span className="hidden sm:inline flex-shrink-0 text-xs text-chart-3">recurring</span>
-              )}
-
-              <span
-                className={`flex-shrink-0 text-sm font-semibold tabular-nums ${
-                  t.type === 'income' ? 'text-chart-1' : 'text-chart-2'
-                }`}
-              >
-                {formatAmount(t)}
-              </span>
-            </button>
-          ))}
+          {oneTime.length > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Receipt className="h-4 w-4 text-muted-foreground" />
+                  <h2 className="text-sm font-semibold text-foreground">One-time</h2>
+                </div>
+                <span className="text-xs text-muted-foreground">
+                  {oneTime.length} transaction{oneTime.length !== 1 ? 's' : ''}
+                </span>
+              </div>
+              <div className="bg-card rounded-xl ring-1 ring-border overflow-hidden">
+                {oneTime.map((t, i) => renderRow(t, i))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
