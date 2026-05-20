@@ -25,6 +25,12 @@ export class DashboardSummaryDto {
   @ApiProperty({ example: 5800 })
   projectedBalance: number;
 
+  @ApiProperty({ example: 1200 })
+  scheduledExpenses: number;
+
+  @ApiProperty({ example: 800 })
+  scheduledIncome: number;
+
   @ApiPropertyOptional({ nullable: true, example: 12 })
   incomeTrend: number | null;
 

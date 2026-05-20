@@ -66,6 +66,8 @@ export interface DashboardSummary {
   totalExpenses: number;
   currentBalance: number;
   projectedBalance: number;
+  scheduledExpenses: number;
+  scheduledIncome: number;
   incomeTrend: number | null;
   expenseTrend: number | null;
 }

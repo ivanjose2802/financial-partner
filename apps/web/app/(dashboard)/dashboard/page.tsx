@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus } from 'lucide-react'
+import { Plus, TrendingDown, TrendingUp } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
 import { useDashboard } from '@/hooks/useDashboard'
 import { WelcomeHeader } from '@/components/dashboard/welcome-header'
@@ -10,6 +10,7 @@ import { CashFlowChart } from '@/components/dashboard/cash-flow-chart'
 import { RecentTransactions } from '@/components/dashboard/recent-transactions'
 import { FinancialHealth } from '@/components/dashboard/financial-health'
 import { UpcomingTransactions } from '@/components/dashboard/upcoming-transactions'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import TransactionForm from '@/app/(dashboard)/transactions/TransactionForm'
 
 function DashboardSkeleton() {
@@ -60,41 +61,80 @@ export default function DashboardPage() {
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <BalanceCard
-          title="Balance of the Month"
+          title="Safe to Spend"
+          amount={data.summary.projectedBalance}
+          icon="wallet"
+          variant="default"
+          subtitle="After pending transactions"
+        />
+        <BalanceCard
+          title="Current Balance"
           amount={data.summary.currentBalance}
           icon="wallet"
           variant="default"
         />
-        <BalanceCard
-          title="Total Income"
-          amount={data.summary.totalIncome}
-          trend={data.summary.incomeTrend}
-          icon="up"
-          variant="income"
-        />
-        <BalanceCard
-          title="Total Expenses"
-          amount={data.summary.totalExpenses}
-          trend={data.summary.expenseTrend}
-          icon="down"
-          variant="expense"
-        />
-        <BalanceCard
-          title="Projected Balance"
-          amount={data.summary.projectedBalance}
-          icon="wallet"
-          variant="default"
-        />
+        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Income This Month
+            </CardTitle>
+            <div className="rounded-lg p-2 bg-chart-1/10">
+              <TrendingUp className="h-4 w-4 text-chart-1" />
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-1.5">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-2xl font-bold text-chart-1">
+                +{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(data.summary.totalIncome)}
+              </span>
+              <span className="text-xs text-muted-foreground">received</span>
+            </div>
+            {data.summary.scheduledIncome > 0 && (
+              <div className="flex items-baseline gap-1.5 opacity-60">
+                <span className="text-base font-medium text-chart-1">
+                  +{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(data.summary.scheduledIncome)}
+                </span>
+                <span className="text-xs text-muted-foreground">incoming</span>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Expenses This Month
+            </CardTitle>
+            <div className="rounded-lg p-2 bg-chart-2/10">
+              <TrendingDown className="h-4 w-4 text-chart-2" />
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-1.5">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-2xl font-bold text-chart-2">
+                -{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(data.summary.totalExpenses)}
+              </span>
+              <span className="text-xs text-muted-foreground">paid</span>
+            </div>
+            {data.summary.scheduledExpenses > 0 && (
+              <div className="flex items-baseline gap-1.5 opacity-60">
+                <span className="text-base font-medium text-chart-2">
+                  -{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(data.summary.scheduledExpenses)}
+                </span>
+                <span className="text-xs text-muted-foreground">committed</span>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-3 lg:items-start">
         <div className="lg:col-span-2 space-y-6">
-          <CashFlowChart data={data.cashFlowData} />
+          <CashFlowChart data={data.cashFlowData} className="h-96" />
           <RecentTransactions transactions={data.recentTransactions} />
         </div>
         <div className="grid gap-6 grid-rows-[1fr_auto]">
-          <FinancialHealth className="h-full" />
-          <UpcomingTransactions transactions={data.upcomingTransactions} />
+          <FinancialHealth className="h-96" />
+          <UpcomingTransactions transactions={data.upcomingTransactions} scheduledExpenses={data.summary.scheduledExpenses} />
         </div>
       </div>
 

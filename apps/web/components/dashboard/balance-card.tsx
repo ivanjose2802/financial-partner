@@ -7,16 +7,18 @@ interface BalanceCardProps {
   title: string
   amount: number
   trend?: number
+  subtitle?: string
   icon?: "wallet" | "up" | "down"
   variant?: "default" | "income" | "expense"
 }
 
-export function BalanceCard({ 
-  title, 
-  amount, 
-  trend, 
+export function BalanceCard({
+  title,
+  amount,
+  trend,
+  subtitle,
   icon = "wallet",
-  variant = "default" 
+  variant = "default"
 }: BalanceCardProps) {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -61,6 +63,9 @@ export function BalanceCard({
         <div className={`text-2xl font-bold ${amountColor}`}>
           {variant === "expense" ? "-" : ""}{formatCurrency(variant === "default" ? amount : Math.abs(amount))}
         </div>
+        {subtitle && (
+          <p className="mt-1 text-[11px] text-muted-foreground opacity-60">{subtitle}</p>
+        )}
         {trend !== undefined && (
           <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
             {trend >= 0 ? (

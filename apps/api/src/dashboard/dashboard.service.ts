@@ -27,6 +27,7 @@ export class DashboardService {
     const startMonth = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}`;
 
     const today = new Date().toISOString().slice(0, 10);
+    const endOfMonth = new Date(year, mo, 0).toISOString().slice(0, 10);
 
     const [currentAgg, prevAgg, scheduledAgg, recentRaw, upcomingRaw, cashFlowRaw] =
       await Promise.all([
@@ -82,14 +83,14 @@ export class DashboardService {
           .take(5)
           .getMany(),
 
-        // F — cash flow last 6 months (completed, grouped by month and type)
+        // F — cash flow last 6 months (current month includes scheduled)
         this.repo
           .createQueryBuilder('t')
           .select("to_char(t.date, 'YYYY-MM')", 'ym')
           .addSelect('t.type', 'type')
           .addSelect('SUM(t.amount)', 'total')
           .where('t.user_id = :userId', { userId })
-          .andWhere('t.date <= :today', { today })
+          .andWhere('t.date <= :endOfMonth', { endOfMonth })
           .andWhere("to_char(t.date, 'YYYY-MM') >= :startMonth", { startMonth })
           .andWhere("to_char(t.date, 'YYYY-MM') <= :month", { month })
           .groupBy("to_char(t.date, 'YYYY-MM'), t.type")
@@ -126,7 +127,7 @@ export class DashboardService {
 
     return {
       currentMonth,
-      summary: { totalIncome, totalExpenses, currentBalance, projectedBalance, incomeTrend, expenseTrend },
+      summary: { totalIncome, totalExpenses, currentBalance, projectedBalance, scheduledExpenses, scheduledIncome, incomeTrend, expenseTrend },
       recentTransactions,
       upcomingTransactions,
       cashFlowData,
