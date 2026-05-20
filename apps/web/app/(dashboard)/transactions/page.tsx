@@ -29,7 +29,7 @@ function sectionTotals(txs: Transaction[]) {
     if (t.type === 'income') inc += Number(t.amount);
     else exp += Number(t.amount);
   }
-  const fmt = (n: number) => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2 });
+  const fmt = (n: number) => '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 });
   const net = inc - exp;
   return {
     income: fmt(inc),
