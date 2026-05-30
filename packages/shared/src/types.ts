@@ -79,3 +79,18 @@ export interface DashboardResponse {
   upcomingTransactions: Transaction[];
   cashFlowData: CashFlowPoint[];
 }
+
+export interface Goal {
+  id: string;
+  userId: string;
+  categories: ExpenseCategory[];
+  limitAmount: number;
+  month: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GoalWithProgress extends Goal {
+  spentAmount: number;
+  percentageUsed: number;
+}
