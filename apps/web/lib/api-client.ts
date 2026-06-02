@@ -48,10 +48,11 @@ import type {
   ExpenseCategory,
   PaginatedResponse,
   DashboardResponse,
+  GoalWithProgress,
 } from '@financial-partner/shared';
 
 export { EXPENSE_CATEGORIES };
-export type { Transaction, TransactionType, Recurrence, ExpenseCategory, DashboardResponse };
+export type { Transaction, TransactionType, Recurrence, ExpenseCategory, DashboardResponse, GoalWithProgress };
 
 export interface CreateTransactionPayload {
   type: TransactionType;
@@ -112,6 +113,44 @@ export const dashboardApi = {
       headers: authHeaders(),
     });
   },
+};
+
+export interface CreateGoalPayload {
+  categories: ExpenseCategory[];
+  limitAmount: number;
+  month?: string;
+}
+
+export interface UpdateGoalPayload {
+  categories?: ExpenseCategory[];
+  limitAmount?: number;
+}
+
+export const goalsApi = {
+  list: (month?: string): Promise<GoalWithProgress[]> => {
+    const qs = month ? `?month=${encodeURIComponent(month)}` : '';
+    return request<GoalWithProgress[]>(`/goals${qs}`, { headers: authHeaders() });
+  },
+
+  create: (body: CreateGoalPayload): Promise<GoalWithProgress> =>
+    request<GoalWithProgress>('/goals', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify(body),
+    }),
+
+  update: (id: string, body: UpdateGoalPayload): Promise<GoalWithProgress> =>
+    request<GoalWithProgress>(`/goals/${id}`, {
+      method: 'PATCH',
+      headers: authHeaders(),
+      body: JSON.stringify(body),
+    }),
+
+  remove: (id: string): Promise<void> =>
+    request<void>(`/goals/${id}`, {
+      method: 'DELETE',
+      headers: authHeaders(),
+    }),
 };
 
 export const authApi = {

@@ -10,6 +10,7 @@ import { CashFlowChart } from '@/components/dashboard/cash-flow-chart'
 import { RecentTransactions } from '@/components/dashboard/recent-transactions'
 import { FinancialHealth } from '@/components/dashboard/financial-health'
 import { UpcomingTransactions } from '@/components/dashboard/upcoming-transactions'
+import { SpendingGoals } from '@/components/dashboard/spending-goals'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import TransactionForm from '@/app/(dashboard)/transactions/TransactionForm'
 
@@ -136,12 +137,18 @@ export default function DashboardPage() {
           <div className="lg:hidden">
             <FinancialHealth />
           </div>
+          <div className="lg:hidden">
+            <SpendingGoals />
+          </div>
           <RecentTransactions transactions={data.recentTransactions} />
         </div>
         <div className="grid gap-6 grid-rows-[1fr_auto]">
           <FinancialHealth className="h-96 hidden lg:flex" />
           <div className="hidden lg:block">
             <UpcomingTransactions transactions={data.upcomingTransactions} scheduledExpenses={data.summary.scheduledExpenses} />
+          </div>
+          <div className="hidden lg:block">
+            <SpendingGoals />
           </div>
         </div>
       </div>

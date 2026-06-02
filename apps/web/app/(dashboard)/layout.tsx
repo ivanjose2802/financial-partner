@@ -51,6 +51,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Link href="/transactions" className={navLink('/transactions')}>
               Transactions
             </Link>
+            <Link href="/goals" className={navLink('/goals')}>
+              Goals
+            </Link>
           </div>
         </div>
 
@@ -89,6 +92,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </Link>
           <Link href="/transactions" className={mobileNavLink('/transactions')}>
             Transactions
+          </Link>
+          <Link href="/goals" className={mobileNavLink('/goals')}>
+            Goals
           </Link>
           <div className="mt-3 pt-3 border-t border-border flex flex-col gap-2">
             <span className="text-sm text-muted-foreground px-3">{user?.email}</span>
