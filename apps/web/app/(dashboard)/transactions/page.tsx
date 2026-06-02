@@ -75,7 +75,7 @@ export default function TransactionsPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['transactions', month],
-    queryFn: () => transactionsApi.list({ month }),
+    queryFn: () => transactionsApi.list({ month, limit: 200 }),
   });
 
   const transactions = data?.data ?? [];
