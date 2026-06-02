@@ -38,7 +38,11 @@ export class TransactionsService {
       .addOrderBy('t.createdAt', 'DESC');
 
     if (month) {
-      qb.andWhere("to_char(t.date, 'YYYY-MM') = :month", { month });
+      qb.andWhere(
+        "(t.recurrence = 'one_time' AND to_char(t.date, 'YYYY-MM') = :month) OR " +
+        "(t.recurrence = 'recurring' AND to_char(t.date, 'YYYY-MM') <= :month)",
+        { month },
+      );
     }
     if (type) {
       qb.andWhere('t.type = :type', { type });

@@ -23,6 +23,16 @@ function formatDate(date: string) {
   });
 }
 
+function recurringDisplayDate(date: string, viewMonth: string): string {
+  const day = new Date(date.slice(0, 10) + 'T12:00:00').getDate();
+  const [y, m] = viewMonth.split('-').map(Number);
+  const lastDay = new Date(y, m, 0).getDate();
+  return new Date(y, m - 1, Math.min(day, lastDay)).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
 function sectionTotals(txs: Transaction[]) {
   let inc = 0, exp = 0;
   for (const t of txs) {
@@ -65,7 +75,7 @@ export default function TransactionsPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['transactions', month],
-    queryFn: () => transactionsApi.list({ month }),
+    queryFn: () => transactionsApi.list({ month, limit: 200 }),
   });
 
   const transactions = data?.data ?? [];
@@ -96,7 +106,7 @@ export default function TransactionsPage() {
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-foreground truncate">{t.description}</p>
           <p className="text-muted-foreground mt-0.5 flex items-center gap-1.5" style={{ fontSize: 11 }}>
-            {formatDate(t.date)}
+            {t.recurrence === 'recurring' ? recurringDisplayDate(t.date, month) : formatDate(t.date)}
             <span>·</span>
             {t.category || t.type === 'income' ? (
               <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium ${
