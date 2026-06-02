@@ -28,51 +28,62 @@ export class DashboardService {
 
     const today = new Date().toISOString().slice(0, 10);
     const endOfMonth = new Date(year, mo, 0).toISOString().slice(0, 10);
+    const monthStart = `${month}-01`;
+    const prevMonthStart = `${prevMonth}-01`;
 
     const [currentAgg, prevAgg, scheduledAgg, recentRaw, upcomingRaw, cashFlowRaw] =
       await Promise.all([
-        // A — current month completed aggregations (date <= today)
+        // A — current month completed: one_time by date, recurring by projected execution day in current month
         this.repo
           .createQueryBuilder('t')
           .select('t.type', 'type')
           .addSelect('SUM(t.amount)', 'total')
           .where('t.user_id = :userId', { userId })
           .andWhere(
-            "(t.recurrence = 'one_time' AND to_char(t.date, 'YYYY-MM') = :month) OR " +
-            "(t.recurrence = 'recurring' AND to_char(t.date, 'YYYY-MM') <= :month)",
-            { month },
+            "(t.recurrence = 'one_time' AND to_char(t.date, 'YYYY-MM') = :month AND t.date <= :today) OR " +
+            "(t.recurrence = 'recurring' AND to_char(t.date, 'YYYY-MM') <= :month AND " +
+            "  LEAST(" +
+            "    date_trunc('month', :monthStart::date) + (EXTRACT(DAY FROM t.date)::int - 1) * INTERVAL '1 day'," +
+            "    date_trunc('month', :monthStart::date) + INTERVAL '1 month' - INTERVAL '1 day'" +
+            "  ) <= :today::date)",
+            { month, today, monthStart },
           )
-          .andWhere('t.date <= :today', { today })
           .groupBy('t.type')
           .getRawMany<{ type: string; total: string }>(),
 
-        // B — previous month completed aggregations (for trend)
+        // B — previous month completed (for trend)
         this.repo
           .createQueryBuilder('t')
           .select('t.type', 'type')
           .addSelect('SUM(t.amount)', 'total')
           .where('t.user_id = :userId', { userId })
           .andWhere(
-            "(t.recurrence = 'one_time' AND to_char(t.date, 'YYYY-MM') = :prevMonth) OR " +
-            "(t.recurrence = 'recurring' AND to_char(t.date, 'YYYY-MM') <= :prevMonth)",
-            { prevMonth },
+            "(t.recurrence = 'one_time' AND to_char(t.date, 'YYYY-MM') = :prevMonth AND t.date <= :today) OR " +
+            "(t.recurrence = 'recurring' AND to_char(t.date, 'YYYY-MM') <= :prevMonth AND " +
+            "  LEAST(" +
+            "    date_trunc('month', :prevMonthStart::date) + (EXTRACT(DAY FROM t.date)::int - 1) * INTERVAL '1 day'," +
+            "    date_trunc('month', :prevMonthStart::date) + INTERVAL '1 month' - INTERVAL '1 day'" +
+            "  ) <= :today::date)",
+            { prevMonth, today, prevMonthStart },
           )
-          .andWhere('t.date <= :today', { today })
           .groupBy('t.type')
           .getRawMany<{ type: string; total: string }>(),
 
-        // C — current month scheduled aggregations (date > today, for projected balance)
+        // C — current month scheduled: one_time future, recurring with execution day still pending this month
         this.repo
           .createQueryBuilder('t')
           .select('t.type', 'type')
           .addSelect('SUM(t.amount)', 'total')
           .where('t.user_id = :userId', { userId })
           .andWhere(
-            "(t.recurrence = 'one_time' AND to_char(t.date, 'YYYY-MM') = :month) OR " +
-            "(t.recurrence = 'recurring' AND to_char(t.date, 'YYYY-MM') <= :month)",
-            { month },
+            "(t.recurrence = 'one_time' AND to_char(t.date, 'YYYY-MM') = :month AND t.date > :today) OR " +
+            "(t.recurrence = 'recurring' AND to_char(t.date, 'YYYY-MM') <= :month AND " +
+            "  LEAST(" +
+            "    date_trunc('month', :monthStart::date) + (EXTRACT(DAY FROM t.date)::int - 1) * INTERVAL '1 day'," +
+            "    date_trunc('month', :monthStart::date) + INTERVAL '1 month' - INTERVAL '1 day'" +
+            "  ) > :today::date)",
+            { month, today, monthStart },
           )
-          .andWhere('t.date > :today', { today })
           .groupBy('t.type')
           .getRawMany<{ type: string; total: string }>(),
 
