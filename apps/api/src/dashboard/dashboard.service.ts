@@ -37,7 +37,11 @@ export class DashboardService {
           .select('t.type', 'type')
           .addSelect('SUM(t.amount)', 'total')
           .where('t.user_id = :userId', { userId })
-          .andWhere("to_char(t.date, 'YYYY-MM') = :month", { month })
+          .andWhere(
+            "(t.recurrence = 'one_time' AND to_char(t.date, 'YYYY-MM') = :month) OR " +
+            "(t.recurrence = 'recurring' AND to_char(t.date, 'YYYY-MM') <= :month)",
+            { month },
+          )
           .andWhere('t.date <= :today', { today })
           .groupBy('t.type')
           .getRawMany<{ type: string; total: string }>(),
@@ -48,7 +52,11 @@ export class DashboardService {
           .select('t.type', 'type')
           .addSelect('SUM(t.amount)', 'total')
           .where('t.user_id = :userId', { userId })
-          .andWhere("to_char(t.date, 'YYYY-MM') = :prevMonth", { prevMonth })
+          .andWhere(
+            "(t.recurrence = 'one_time' AND to_char(t.date, 'YYYY-MM') = :prevMonth) OR " +
+            "(t.recurrence = 'recurring' AND to_char(t.date, 'YYYY-MM') <= :prevMonth)",
+            { prevMonth },
+          )
           .andWhere('t.date <= :today', { today })
           .groupBy('t.type')
           .getRawMany<{ type: string; total: string }>(),
@@ -59,7 +67,11 @@ export class DashboardService {
           .select('t.type', 'type')
           .addSelect('SUM(t.amount)', 'total')
           .where('t.user_id = :userId', { userId })
-          .andWhere("to_char(t.date, 'YYYY-MM') = :month", { month })
+          .andWhere(
+            "(t.recurrence = 'one_time' AND to_char(t.date, 'YYYY-MM') = :month) OR " +
+            "(t.recurrence = 'recurring' AND to_char(t.date, 'YYYY-MM') <= :month)",
+            { month },
+          )
           .andWhere('t.date > :today', { today })
           .groupBy('t.type')
           .getRawMany<{ type: string; total: string }>(),
@@ -83,19 +95,36 @@ export class DashboardService {
           .take(5)
           .getMany(),
 
-        // F — cash flow last 6 months (current month includes scheduled)
-        this.repo
-          .createQueryBuilder('t')
-          .select("to_char(t.date, 'YYYY-MM')", 'ym')
-          .addSelect('t.type', 'type')
-          .addSelect('SUM(t.amount)', 'total')
-          .where('t.user_id = :userId', { userId })
-          .andWhere('t.date <= :endOfMonth', { endOfMonth })
-          .andWhere("to_char(t.date, 'YYYY-MM') >= :startMonth", { startMonth })
-          .andWhere("to_char(t.date, 'YYYY-MM') <= :month", { month })
-          .groupBy("to_char(t.date, 'YYYY-MM'), t.type")
-          .orderBy("to_char(t.date, 'YYYY-MM')", 'ASC')
-          .getRawMany<{ ym: string; type: string; total: string }>(),
+        // F — cash flow last 6 months with recurring expansion via generate_series
+        this.repo.query<{ ym: string; type: string; total: string }[]>(`
+          SELECT to_char(t.date, 'YYYY-MM') AS ym, t.type, SUM(t.amount)::text AS total
+          FROM transactions t
+          WHERE t.user_id = $1
+            AND t.recurrence = 'one_time'
+            AND to_char(t.date, 'YYYY-MM') >= $2
+            AND to_char(t.date, 'YYYY-MM') <= $3
+            AND t.date <= $4
+          GROUP BY to_char(t.date, 'YYYY-MM'), t.type
+
+          UNION ALL
+
+          SELECT m.ym, t.type, SUM(t.amount)::text AS total
+          FROM transactions t
+          CROSS JOIN LATERAL (
+            SELECT to_char(gs, 'YYYY-MM') AS ym
+            FROM generate_series(
+              date_trunc('month', t.date::date),
+              date_trunc('month', $4::date),
+              '1 month'::interval
+            ) AS gs
+          ) m
+          WHERE t.user_id = $1
+            AND t.recurrence = 'recurring'
+            AND to_char(t.date, 'YYYY-MM') <= $3
+            AND m.ym >= $2
+            AND m.ym <= $3
+          GROUP BY m.ym, t.type
+        `, [userId, startMonth, month, endOfMonth]),
       ]);
 
     // — Summary calculations —
