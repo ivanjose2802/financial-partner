@@ -194,8 +194,8 @@ function buildCashFlow(
   const index: Record<string, { income: number; expenses: number }> = {};
   for (const row of raw) {
     if (!index[row.ym]) index[row.ym] = { income: 0, expenses: 0 };
-    if (row.type === 'income') index[row.ym].income = Number(row.total);
-    else index[row.ym].expenses = Number(row.total);
+    if (row.type === 'income') index[row.ym].income += Number(row.total);
+    else index[row.ym].expenses += Number(row.total);
   }
 
   // Iterate over the 6-month window in order
