@@ -7,7 +7,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             Financial Partner
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Take control of your money
+            Take control of your finance
           </p>
         </div>
         <div className="rounded-xl border border-border bg-card p-8 shadow-md">
